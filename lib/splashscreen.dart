@@ -17,8 +17,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(
         const Duration(seconds: 3),
-        () => Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (content) => LoginScreen())));
+        () => Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (content) => const LoginScreen())));
   }
 
   @override
@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 50, 0, 20),
+            padding: const EdgeInsets.fromLTRB(0, 50, 0, 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors.red),
+                      color: Colors.white),
                 ),
                 SizedBox(height: 16),
                 CircularProgressIndicator(),

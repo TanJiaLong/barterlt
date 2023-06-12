@@ -35,7 +35,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(maintitle)),
       body: tabchildren[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,

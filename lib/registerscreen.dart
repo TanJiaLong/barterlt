@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 children: [
                   Form(
@@ -236,7 +236,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String phone = phoneEditingController.text;
     String password = password1EditingController.text;
 
-    http.post(Uri.parse("${MyConfig().server}/barterlt/php/register_user.php"),
+    http.post(
+        Uri.parse(
+            "${MyConfig().server}/mobileprogramming/barterlt/php/register_user.php"),
         body: {
           'name': name,
           'email': email,

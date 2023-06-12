@@ -61,65 +61,67 @@ class _LoginScreenState extends State<LoginScreen> {
                 elevation: 10,
                 child: Form(
                   key: _formKey,
-                  child: Column(children: [
-                    TextFormField(
-                      controller: emailEditingController,
-                      validator: (val) => val!.isEmpty ||
-                              !val.contains("@") ||
-                              !val.contains(".")
-                          ? "Please enter a valid email"
-                          : null,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        icon: Icon(Icons.email),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 3),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: emailEditingController,
+                        validator: (val) => val!.isEmpty ||
+                                !val.contains("@") ||
+                                !val.contains(".")
+                            ? "Please enter a valid email"
+                            : null,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          icon: Icon(Icons.email),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 3),
+                          ),
                         ),
+                        keyboardType: TextInputType.text,
                       ),
-                      keyboardType: TextInputType.text,
-                    ),
-                    TextFormField(
-                      controller: passwordEditingController,
-                      validator: (val) => val!.isEmpty || (val.length < 5)
-                          ? "password must be longer than 5"
-                          : null,
-                      obscureText: passwordVisible,
-                      decoration: InputDecoration(
-                        labelText: "Password",
-                        icon: const Icon(Icons.lock),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(width: 3),
+                      TextFormField(
+                        controller: passwordEditingController,
+                        validator: (val) => val!.isEmpty || (val.length < 5)
+                            ? "password must be longer than 5"
+                            : null,
+                        obscureText: passwordVisible,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          icon: const Icon(Icons.lock),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(width: 3),
+                          ),
+                          suffixIcon: IconButton(
+                              icon: Icon(passwordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility),
+                              onPressed: () {
+                                setState(() {
+                                  passwordVisible = !passwordVisible;
+                                });
+                              }),
                         ),
-                        suffixIcon: IconButton(
-                            icon: Icon(passwordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            onPressed: () {
-                              setState(() {
-                                passwordVisible = !passwordVisible;
-                              });
-                            }),
+                        keyboardType: TextInputType.number,
                       ),
-                      keyboardType: TextInputType.number,
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Checkbox(
-                            value: isRemember,
-                            onChanged: (bool? value) {
-                              saveprefs(value!);
-                              setState(() {
-                                isRemember = value;
-                              });
-                            }),
-                        const Text("Remember me"),
-                        ElevatedButton(
-                            onPressed: toLogin, child: const Text("LOGIN")),
-                      ],
-                    )
-                  ]),
+                      const SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Checkbox(
+                              value: isRemember,
+                              onChanged: (bool? value) {
+                                saveprefs(value!);
+                                setState(() {
+                                  isRemember = value;
+                                });
+                              }),
+                          const Text("Remember me"),
+                          ElevatedButton(
+                              onPressed: toLogin, child: const Text("LOGIN")),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -147,12 +149,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     String email = emailEditingController.text;
     String password = passwordEditingController.text;
-    http.post(Uri.parse('${MyConfig().server}/barterlt/php/login_user.php'),
+    http.post(
+        Uri.parse(
+            '${MyConfig().server}/mobileprogramming/barterlt/php/login_user.php'),
         body: {
           'email': email,
           'password': password,
         }).then((response) {
-      print(response.body);
+      // print(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {
