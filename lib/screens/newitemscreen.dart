@@ -291,6 +291,8 @@ class _NewItemScreenState extends State<NewItemScreen> {
         imageQuality: 100, maxHeight: 1200, maxWidth: 800);
 
     if (selectedImages.isNotEmpty) {
+      _imagesX.clear();
+      _images.clear();
       for (int i = 0; i < 3; ++i) {
         //Add image in XFile type
         _imagesX.add(selectedImages[i]);

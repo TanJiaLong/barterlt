@@ -113,7 +113,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   ),
                   TableCell(
                     child: Text(
-                      widget.item.itemValue.toString(),
+                      'RM ${widget.item.itemValue.toString()}',
                     ),
                   )
                 ]),

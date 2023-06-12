@@ -41,71 +41,74 @@ class _ItemScreenState extends State<ItemScreen> {
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Items')),
-      body: Column(
-        children: [
-          Container(
-            height: 24,
-            color: Theme.of(context).colorScheme.primary,
-            alignment: Alignment.center,
-            child: Text(
-              '${itemList.length} items found',
-              style: const TextStyle(fontSize: 18, color: Colors.white),
+      body: RefreshIndicator(
+        onRefresh: _refreshItems,
+        child: Column(
+          children: [
+            Container(
+              height: 24,
+              color: Theme.of(context).colorScheme.primary,
+              alignment: Alignment.center,
+              child: Text(
+                '${itemList.length} items found',
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ),
-          ),
-          Expanded(
-              child: GridView.count(
-            crossAxisCount: axiscount,
-            children: List.generate(itemList.length, (index) {
-              return Card(
-                elevation: 10,
-                child: InkWell(
-                  onLongPress: () {
-                    deleteDialog(index);
-                  },
-                  onTap: () async {
-                    Item item = Item.fromJson(itemList[index].toJson());
-                    await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                EditItemScreen(user: widget.user, item: item)));
-                    loadItem();
-                  },
-                  child: Column(
-                    children: [
-                      Flexible(
-                        flex: 5,
-                        child: CachedNetworkImage(
-                          height: 120,
-                          imageUrl:
-                              '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${itemList[index].itemId}-1.png',
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
+            Expanded(
+                child: GridView.count(
+              crossAxisCount: axiscount,
+              children: List.generate(itemList.length, (index) {
+                return Card(
+                  elevation: 10,
+                  child: InkWell(
+                    onLongPress: () {
+                      deleteDialog(index);
+                    },
+                    onTap: () async {
+                      Item item = Item.fromJson(itemList[index].toJson());
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditItemScreen(
+                                  user: widget.user, item: item)));
+                      loadItem();
+                    },
+                    child: Column(
+                      children: [
+                        Flexible(
+                          flex: 5,
+                          child: CachedNetworkImage(
+                            height: 120,
+                            imageUrl:
+                                '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${itemList[index].itemId}-1.png',
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
                         ),
-                      ),
-                      Text(
-                        itemList[index].itemName.toString(),
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "${itemList[index].itemCategory}",
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Text(
-                        "RM ${double.parse(itemList[index].itemValue.toString()).toStringAsFixed(2)}",
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
+                        Text(
+                          itemList[index].itemName.toString(),
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "${itemList[index].itemCategory}",
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        Text(
+                          "RM ${double.parse(itemList[index].itemValue.toString()).toStringAsFixed(2)}",
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }),
-          ))
-        ],
+                );
+              }),
+            ))
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -125,7 +128,11 @@ class _ItemScreenState extends State<ItemScreen> {
     );
   }
 
-  void loadItem() {
+  Future<void> _refreshItems() async {
+    loadItem();
+  }
+
+  void loadItem() async {
     http.post(
         Uri.parse(
             '${MyConfig().server}/mobileprogramming/barterlt/php/load_item.php'),
