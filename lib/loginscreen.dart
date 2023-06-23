@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: screenHeight * 0.3,
               width: screenWidth,
               child: Image.asset(
@@ -156,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'email': email,
           'password': password,
         }).then((response) {
-      // print(response.body);
+      print(response.body);
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {

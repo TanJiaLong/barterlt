@@ -36,8 +36,8 @@ class _NewItemScreenState extends State<NewItemScreen> {
   late double screenWidth;
   final _formKey = GlobalKey<FormState>();
 
-  List<XFile> _imagesX = [];
-  List<File> _images = [];
+  List<File?> _images = List.generate(3, (_) => null);
+
   var assetPath = 'assets/images/camera.png';
   String selectedCategory = 'Electronics';
   List<String> itemCategory = <String>[
@@ -83,27 +83,77 @@ class _NewItemScreenState extends State<NewItemScreen> {
         children: [
           Flexible(
             flex: 4,
-            child: GestureDetector(
-              onTap: () {
-                _selectFromGallery();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Card(
-                  child: Container(
-                    width: screenWidth,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: _images.isEmpty
-                            ? AssetImage(assetPath)
-                            : FileImage(_images[0]) as ImageProvider,
-                        fit: BoxFit.contain,
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: List.generate(_images.length, (index) {
+                  return GestureDetector(
+                    onTap: () {
+                      _selectFromGallery(index);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Card(
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Container(
+                          margin: EdgeInsets.all(8),
+                          width: screenWidth * 0.8,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: _images[index] == null
+                                  ? AssetImage(assetPath)
+                                  : FileImage(_images[index]!) as ImageProvider,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }),
               ),
             ),
+
+            // ListView(
+            //   scrollDirection: Axis.horizontal,
+            //   children: [
+            //     selectImagesWidget(1),
+            //     const SizedBox(
+            //       width: 4,
+            //     ),
+            //     selectImagesWidget(1),
+            //     const SizedBox(
+            //       width: 4,
+            //     ),
+            //     selectImagesWidget(1),
+            //   ],
+            // ),
+
+            // GestureDetector(
+            //   onTap: () {
+            //     _selectFromGallery();
+            //   },
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(8),
+            //     child: Card(
+            //       child: Container(
+            //         width: screenWidth,
+            //         decoration: BoxDecoration(
+            //           image: DecorationImage(
+            //             image: _images.isEmpty
+            //                 ? AssetImage(assetPath)
+            //                 : FileImage(_images[0]) as ImageProvider,
+            //             fit: BoxFit.contain,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ),
           Expanded(
             flex: 6,
@@ -285,22 +335,30 @@ class _NewItemScreenState extends State<NewItemScreen> {
     );
   }
 
-  void _selectFromGallery() async {
+  void _selectFromGallery(int index) async {
     final ImagePicker picker = ImagePicker();
-    final selectedImages = await picker.pickMultiImage(
-        imageQuality: 100, maxHeight: 1200, maxWidth: 800);
+    final selectedImage = await picker.pickImage(
+        source: ImageSource.gallery, maxHeight: 1200, maxWidth: 800);
 
-    if (selectedImages.isNotEmpty) {
-      _imagesX.clear();
-      _images.clear();
-      for (int i = 0; i < 3; ++i) {
-        //Add image in XFile type
-        _imagesX.add(selectedImages[i]);
-        //Convert XFile to File type
-        File file = File(selectedImages[i].path);
-        _images.add(file);
-      }
+    if (selectedImage != null) {
+      _images[index] = File(selectedImage.path);
     }
+    setState(() {});
+
+    // mid-term before modification
+    // final selectedImages = await picker.pickMultiImage(
+    //     imageQuality: 100, maxHeight: 1200, maxWidth: 800);
+    // if (selectedImages.isNotEmpty) {
+    //   _imagesX.clear();
+    //   _images.clear();
+    //   for (int i = 0; i < 3; ++i) {
+    //     //Add image in XFile type
+    //     _imagesX.add(selectedImages[i]);
+    //     //Convert XFile to File type
+    //     File file = File(selectedImages[i].path);
+    //     _images.add(file);
+    //   }
+    // }
   }
 
   void insertDialog() {
@@ -351,9 +409,9 @@ class _NewItemScreenState extends State<NewItemScreen> {
     String locality = _localityEditingController.text;
     String latitude = _latitudeEditingController.text;
     String longitude = _longitudeEditingController.text;
-    String base64image1 = base64Encode(_images[0].readAsBytesSync());
-    String base64image2 = base64Encode(_images[1].readAsBytesSync());
-    String base64image3 = base64Encode(_images[2].readAsBytesSync());
+    String base64image1 = base64Encode(_images[0]!.readAsBytesSync());
+    String base64image2 = base64Encode(_images[1]!.readAsBytesSync());
+    String base64image3 = base64Encode(_images[2]!.readAsBytesSync());
 
     http.post(
         Uri.parse(

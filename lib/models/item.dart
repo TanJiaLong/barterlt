@@ -40,17 +40,17 @@ class Item {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['item_id'] = this.itemId;
-    data['user_id'] = this.userId;
-    data['item_name'] = this.itemName;
-    data['item_desc'] = this.itemDesc;
-    data['item_category'] = this.itemCategory;
-    data['item_value'] = this.itemValue;
-    data['state'] = this.state;
-    data['locality'] = this.locality;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['reg_date'] = this.regDate;
+    data['item_id'] = itemId;
+    data['user_id'] = userId;
+    data['item_name'] = itemName;
+    data['item_desc'] = itemDesc;
+    data['item_category'] = itemCategory;
+    data['item_value'] = itemValue;
+    data['state'] = state;
+    data['locality'] = locality;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['reg_date'] = regDate;
     return data;
   }
 }

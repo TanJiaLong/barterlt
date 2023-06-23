@@ -39,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: screenHeight * 0.3,
               width: screenWidth,
               child: Image.asset(

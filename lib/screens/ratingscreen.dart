@@ -13,7 +13,7 @@ class _RatingScreenState extends State<RatingScreen> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: const Text("Rating Screen"),
+      child: Text("Rating Screen"),
     );
   }
 }

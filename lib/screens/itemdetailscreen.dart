@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:barterlt/models/item.dart';
 import 'package:barterlt/models/user.dart';
 import 'package:barterlt/myconfig.dart';
@@ -16,6 +18,8 @@ class ItemDetailScreen extends StatefulWidget {
 
 class _ItemDetailScreenState extends State<ItemDetailScreen> {
   final dateFormat = DateFormat('dd-MM-yyyy hh:mm a');
+  List<File?> _images = List.generate(3, (index) => null);
+  int _currentImageIndex = 0;
 
   late double screenHeight, screenWidth, cardwitdh;
   @override
@@ -28,26 +32,59 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         Flexible(
           flex: 4,
           child: Container(
-            height: 340,
+            height: 270,
             padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
             child: Card(
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: [
-                  buildScrollableImage(1),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  buildScrollableImage(2),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  buildScrollableImage(3),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                ],
+                children: List.generate(
+                  _images.length,
+                  (index) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          width: screenWidth / 1.1,
+                          child: Card(
+                            elevation: 10,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CachedNetworkImage(
+                                height: 230,
+                                fit: BoxFit.contain,
+                                imageUrl:
+                                    "${MyConfig().server}/mobileprogramming/barterlt/assets/items/${widget.item.itemId}-${index + 1}.png",
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
+
+              // Mid term (before modification)
+              // [
+              //   buildScrollableImage(1),
+              //   const SizedBox(
+              //     width: 12,
+              //   ),
+              //   buildScrollableImage(2),
+              //   const SizedBox(
+              //     width: 12,
+              //   ),
+              //   buildScrollableImage(3),
+              //   const SizedBox(
+              //     width: 12,
+              //   ),
+              // ],
+              //),
               // SizedBox(
               //   width: screenWidth,
               //   child: CachedNetworkImage(
@@ -148,17 +185,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
           ),
         )
       ]),
-    );
-  }
-
-  Widget buildScrollableImage(int num) {
-    return CachedNetworkImage(
-      height: 340,
-      fit: BoxFit.contain,
-      imageUrl:
-          "${MyConfig().server}/mobileprogramming/barterlt/assets/items/${widget.item.itemId}-$num.png",
-      placeholder: (context, url) => const CircularProgressIndicator(),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
     );
   }
 }

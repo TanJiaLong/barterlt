@@ -21,7 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             height: screenHeight * 0.4,
             width: screenWidth,
             child: Card(
@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    margin: EdgeInsets.all(5),
+                    margin: const EdgeInsets.all(5),
                     width: screenWidth * 0.4,
                     child: Image.asset("assets/images/profile.png"),
                   ),
@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const Text(
             "Profile",
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           GestureDetector(
