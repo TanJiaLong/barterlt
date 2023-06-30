@@ -17,54 +17,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-    return Center(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            height: screenHeight * 0.4,
-            width: screenWidth,
-            child: Card(
-              elevation: 10,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(5),
-                    width: screenWidth * 0.4,
-                    child: Image.asset("assets/images/profile.png"),
-                  ),
-                  Expanded(
-                      child: Column(
-                    children: [
-                      Text(
-                        widget.user.name.toString(),
-                        style: const TextStyle(fontSize: 32),
-                      ),
-                      Text(widget.user.email.toString()),
-                      Text(widget.user.phone.toString()),
-                      Text(widget.user.datereg.toString()),
-                    ],
-                  ))
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Profile"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              height: screenHeight * 0.25,
+              width: screenWidth,
+              child: Card(
+                elevation: 10,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(5),
+                      padding: const EdgeInsets.all(8),
+                      width: screenWidth * 0.4,
+                      child: Image.asset("assets/images/profile.png"),
+                    ),
+                    Expanded(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.user.name.toString(),
+                          style: const TextStyle(fontSize: 32),
+                        ),
+                        Text(
+                          widget.user.email.toString(),
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          widget.user.phone.toString(),
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          widget.user.datereg.toString(),
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ))
+                  ],
+                ),
               ),
             ),
-          ),
-          const Text(
-            "Profile",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: ((context) => const LoginScreen())));
-            },
-            child: const Text("Logout"),
-          )
-        ],
+            const Text(
+              "Profile",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: ((context) => const LoginScreen())));
+              },
+              child: Container(
+                height: screenHeight * 0.05,
+                width: screenWidth,
+                color: const Color.fromARGB(255, 165, 218, 243),
+                child: const Center(
+                  child: Text(
+                    "Logout",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

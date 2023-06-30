@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:barterlt/models/user.dart';
 import 'package:barterlt/models/item.dart';
@@ -21,6 +23,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
       TextEditingController();
   final TextEditingController _itemDescEditingController =
       TextEditingController();
+  final TextEditingController _itemQuantityEditingController =
+      TextEditingController();
   final TextEditingController _itemValueEditingController =
       TextEditingController();
   final TextEditingController _stateEditingController = TextEditingController();
@@ -42,12 +46,17 @@ class _EditItemScreenState extends State<EditItemScreen> {
     'Toys and Games',
     'Clothing and Fashion'
   ];
+  //show image part
+  List<File?> _images = List.generate(3, (index) => null);
+  int _currentImageIndex = 0;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _itemNameEditingController.text = widget.item.itemName.toString();
     _itemDescEditingController.text = widget.item.itemDesc.toString();
+    _itemQuantityEditingController.text = widget.item.itemQuantity.toString();
     _itemValueEditingController.text =
         double.parse(widget.item.itemValue.toString()).toStringAsFixed(2);
     _stateEditingController.text = widget.item.state.toString();
@@ -67,21 +76,63 @@ class _EditItemScreenState extends State<EditItemScreen> {
       ),
       body: Column(
         children: [
+          // Flexible(
+          //   flex: 4,
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(8),
+          //     child: Card(
+          //       child: SizedBox(
+          //         width: screenWidth,
+          //         child: CachedNetworkImage(
+          //           width: screenWidth,
+          //           imageUrl:
+          //               '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${widget.item.itemId}-1.png',
+          //           placeholder: (context, url) =>
+          //               const CircularProgressIndicator(),
+          //           errorWidget: (context, url, error) =>
+          //               const Icon(Icons.error),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Flexible(
             flex: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
+            child: Container(
+              height: 270,
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
               child: Card(
-                child: SizedBox(
-                  width: screenWidth,
-                  child: CachedNetworkImage(
-                    width: screenWidth,
-                    imageUrl:
-                        '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${widget.item.itemId}-1.png',
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: List.generate(
+                    _images.length,
+                    (index) {
+                      return Column(
+                        children: [
+                          SizedBox(
+                            width: screenWidth / 1.1,
+                            child: Card(
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: CachedNetworkImage(
+                                  height: 230,
+                                  fit: BoxFit.contain,
+                                  imageUrl:
+                                      "${MyConfig().server}/mobileprogramming/barterlt/assets/items/${widget.item.itemId}-${index + 1}.png",
+                                  placeholder: (context, url) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.error),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -152,21 +203,47 @@ class _EditItemScreenState extends State<EditItemScreen> {
                           ),
                         ),
                       ),
-                      TextFormField(
-                        textInputAction: TextInputAction.next,
-                        controller: _itemValueEditingController,
-                        validator: (value) =>
-                            value!.isEmpty || double.parse(value) <= 0
-                                ? 'Please enter a correct amount'
-                                : null,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          hintText: 'Item Value',
-                          icon: Icon(Icons.money),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2),
+                      Row(
+                        children: [
+                          Flexible(
+                            flex: 5,
+                            child: TextFormField(
+                              textInputAction: TextInputAction.next,
+                              controller: _itemQuantityEditingController,
+                              validator: (value) =>
+                                  value!.isEmpty || int.parse(value) <= 0
+                                      ? 'Please enter a correct quantity'
+                                      : null,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                hintText: 'Item Quantity',
+                                icon: Icon(Icons.money),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 2),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          Flexible(
+                            flex: 5,
+                            child: TextFormField(
+                              textInputAction: TextInputAction.next,
+                              controller: _itemValueEditingController,
+                              validator: (value) =>
+                                  value!.isEmpty || double.parse(value) <= 0
+                                      ? 'Please enter a correct amount'
+                                      : null,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                hintText: 'Item Value',
+                                icon: Icon(Icons.numbers),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 2),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       Row(
                         children: [
@@ -304,6 +381,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
     String name = _itemNameEditingController.text;
     String desc = _itemDescEditingController.text;
     String category = selectedCategory.toString();
+    String quantity = _itemQuantityEditingController.text;
     String value = _itemValueEditingController.text;
     String state = _stateEditingController.text;
     String locality = _localityEditingController.text;
@@ -318,12 +396,14 @@ class _EditItemScreenState extends State<EditItemScreen> {
           'itemName': name,
           'itemDesc': desc,
           'itemCategory': category,
+          'itemQuantity': quantity,
           'itemValue': value,
           'state': state,
           'locality': locality,
           'latitude': latitude,
           'longitude': longitude,
         }).then((response) {
+      log("${response.body} ");
       if (response.statusCode == 200) {
         var jsondata = jsonDecode(response.body);
         if (jsondata['status'] == 'success') {

@@ -23,6 +23,8 @@ class _NewItemScreenState extends State<NewItemScreen> {
       TextEditingController();
   final TextEditingController _itemDescEditingController =
       TextEditingController();
+  final TextEditingController _itemQuantityEditingController =
+      TextEditingController();
   final TextEditingController _itemValueEditingController =
       TextEditingController();
   final TextEditingController _stateEditingController = TextEditingController();
@@ -220,21 +222,47 @@ class _NewItemScreenState extends State<NewItemScreen> {
                           ),
                         ),
                       ),
-                      TextFormField(
-                        textInputAction: TextInputAction.next,
-                        controller: _itemValueEditingController,
-                        validator: (value) =>
-                            value!.isEmpty || double.parse(value) <= 0
-                                ? 'Please enter a correct amount'
-                                : null,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          hintText: 'Item Value',
-                          icon: Icon(Icons.money),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2),
+                      Row(
+                        children: [
+                          Flexible(
+                            flex: 5,
+                            child: TextFormField(
+                              textInputAction: TextInputAction.next,
+                              controller: _itemQuantityEditingController,
+                              validator: (value) =>
+                                  value!.isEmpty || int.parse(value) <= 0
+                                      ? 'Please enter a correct quantity'
+                                      : null,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                hintText: 'Item Quantity',
+                                icon: Icon(Icons.money),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 2),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          Flexible(
+                            flex: 5,
+                            child: TextFormField(
+                              textInputAction: TextInputAction.next,
+                              controller: _itemValueEditingController,
+                              validator: (value) =>
+                                  value!.isEmpty || double.parse(value) <= 0
+                                      ? 'Please enter a correct amount'
+                                      : null,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                hintText: 'Item Value',
+                                icon: Icon(Icons.numbers),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(width: 2),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       Row(
                         children: [
@@ -404,6 +432,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
     String name = _itemNameEditingController.text;
     String desc = _itemDescEditingController.text;
     String category = selectedCategory.toString();
+    String quantity = _itemQuantityEditingController.text;
     String value = _itemValueEditingController.text;
     String state = _stateEditingController.text;
     String locality = _localityEditingController.text;
@@ -421,6 +450,7 @@ class _NewItemScreenState extends State<NewItemScreen> {
           'itemName': name,
           'itemDesc': desc,
           'itemCategory': category,
+          'itemQuantity': quantity,
           'itemValue': value,
           'state': state,
           'locality': locality,

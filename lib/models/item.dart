@@ -4,6 +4,7 @@ class Item {
   String? itemName;
   String? itemDesc;
   String? itemCategory;
+  String? itemQuantity;
   String? itemValue;
   String? state;
   String? locality;
@@ -17,6 +18,7 @@ class Item {
       this.itemName,
       this.itemDesc,
       this.itemCategory,
+      this.itemQuantity,
       this.itemValue,
       this.state,
       this.locality,
@@ -30,6 +32,7 @@ class Item {
     itemName = json['item_name'];
     itemDesc = json['item_desc'];
     itemCategory = json['item_category'];
+    itemQuantity = json['item_quantity'];
     itemValue = json['item_value'];
     state = json['state'];
     locality = json['locality'];
@@ -45,6 +48,7 @@ class Item {
     data['item_name'] = itemName;
     data['item_desc'] = itemDesc;
     data['item_category'] = itemCategory;
+    data['item_quantity'] = itemQuantity;
     data['item_value'] = itemValue;
     data['state'] = state;
     data['locality'] = locality;

@@ -17,15 +17,15 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   late List<Widget> tabchildren;
   int _currentIndex = 0;
-  String maintitle = "Items";
+  String maintitle = "Barter";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     tabchildren = <Widget>[
-      ItemScreen(user: widget.user),
       SearchScreen(user: widget.user),
+      ItemScreen(user: widget.user),
       MessageScreen(user: widget.user),
       RatingScreen(user: widget.user),
       ProfileScreen(user: widget.user)
@@ -42,12 +42,12 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _currentIndex,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.sell),
-            label: "Items",
+            icon: Icon(Icons.search),
+            label: "Barter",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: "Search",
+            icon: Icon(Icons.sell),
+            label: "Item",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.message),
@@ -70,10 +70,10 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _currentIndex = value;
       if (_currentIndex == 0) {
-        maintitle = "Items";
+        maintitle = "Barter";
       }
       if (_currentIndex == 1) {
-        maintitle = "Searches";
+        maintitle = "Item";
       }
       if (_currentIndex == 2) {
         maintitle = "Messages";

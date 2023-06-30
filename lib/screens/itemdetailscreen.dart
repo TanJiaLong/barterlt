@@ -18,8 +18,7 @@ class ItemDetailScreen extends StatefulWidget {
 
 class _ItemDetailScreenState extends State<ItemDetailScreen> {
   final dateFormat = DateFormat('dd-MM-yyyy hh:mm a');
-  List<File?> _images = List.generate(3, (index) => null);
-  int _currentImageIndex = 0;
+  final List<File?> _images = List.generate(3, (index) => null);
 
   late double screenHeight, screenWidth, cardwitdh;
   @override
@@ -138,6 +137,19 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   TableCell(
                     child: Text(
                       widget.item.itemCategory.toString(),
+                    ),
+                  )
+                ]),
+                TableRow(children: [
+                  const TableCell(
+                    child: Text(
+                      "Item Quantity",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  TableCell(
+                    child: Text(
+                      '${widget.item.itemQuantity.toString()} available',
                     ),
                   )
                 ]),

@@ -24,11 +24,24 @@ class _SearchScreenState extends State<SearchScreen> {
   late int axiscount;
   List<Item> itemList = [];
 
+  List<String> itemCategory = <String>[
+    'Electronics',
+    'Books and Media',
+    'Sports and Fitness',
+    'Toys and Games',
+    'Clothing and Fashion'
+  ];
+  List<String> selectedCategories = [];
+
+  int numberOfPage = 1, currentPage = 1;
+  int numberOfResults = 0;
+  var color;
+  bool httpStatus = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    loadItem();
+    loadItem(1);
   }
 
   @override
@@ -42,7 +55,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Search Screen"),
+        title: const Text("Barter Screen"),
         actions: [
           IconButton(
               onPressed: () {
@@ -51,79 +64,199 @@ class _SearchScreenState extends State<SearchScreen> {
               icon: const Icon(Icons.search))
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            height: 20,
-            color: Theme.of(context).colorScheme.primary,
-            alignment: Alignment.center,
-            child: Text(
-              '${itemList.length} items found',
-              style: const TextStyle(fontSize: 18, color: Colors.white),
-            ),
-          ),
-          Expanded(
-              child: GridView.count(
-            crossAxisCount: axiscount,
-            children: List.generate(itemList.length, (index) {
-              return Card(
-                elevation: 10,
-                child: InkWell(
-                  onTap: () async {
-                    Item item = Item.fromJson(itemList[index].toJson());
-                    await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ItemDetailScreen(
-                                user: widget.user, item: item)));
-                    loadItem();
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        flex: 5,
-                        child: CachedNetworkImage(
-                          height: 120,
-                          imageUrl:
-                              '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${itemList[index].itemId}-1.png',
-                          fit: BoxFit.contain,
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
+      body: httpStatus
+          ? Column(
+              children: [
+                InkWell(
+                  onTap: showCategoryFilter,
+                  child: Container(
+                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    alignment: Alignment.center,
+                    color: Colors.grey,
+                    child: Row(
+                      children: const [
+                        Icon(Icons.category),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Select Categories',
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
-                      ),
-                      Text(
-                        itemList[index].itemName.toString(),
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "${itemList[index].itemCategory}",
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Text(
-                        "RM ${double.parse(itemList[index].itemValue.toString()).toStringAsFixed(2)}",
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              );
-            }),
-          ))
-        ],
-      ),
+                Container(
+                  height: 20,
+                  color: Theme.of(context).colorScheme.primary,
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$numberOfResults items found',
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+                Expanded(
+                    child: GridView.count(
+                  crossAxisCount: axiscount,
+                  children: List.generate(itemList.length, (index) {
+                    return Card(
+                      elevation: 10,
+                      child: InkWell(
+                        onTap: () async {
+                          Item item = Item.fromJson(itemList[index].toJson());
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ItemDetailScreen(
+                                      user: widget.user, item: item)));
+                          loadItem(1);
+                          currentPage = 1;
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              flex: 5,
+                              child: CachedNetworkImage(
+                                height: 120,
+                                imageUrl:
+                                    '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${itemList[index].itemId}-1.png',
+                                fit: BoxFit.contain,
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                            ),
+                            Text(
+                              itemList[index].itemName.toString(),
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "${itemList[index].itemCategory}",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              "${itemList[index].itemQuantity} available",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              "RM ${double.parse(itemList[index].itemValue.toString()).toStringAsFixed(2)}",
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                )),
+                SizedBox(
+                  height: 50,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: numberOfPage,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      //build the list for textbutton with scroll
+                      if ((currentPage - 1) == index) {
+                        //set current page number active
+                        color = Colors.red;
+                      } else {
+                        color = Colors.black;
+                      }
+                      return TextButton(
+                          onPressed: () {
+                            currentPage = index + 1;
+                            loadItem(index + 1);
+                          },
+                          child: Text(
+                            (index + 1).toString(),
+                            style: TextStyle(color: color, fontSize: 18),
+                          ));
+                    },
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Text(
+                  "HTTP data is not yet available",
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
     );
   }
 
-  void loadItem() {
+  void showCategoryFilter() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: 400,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Select Categories',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: itemCategory.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final category = itemCategory[index];
+                        final isSelected =
+                            selectedCategories.contains(category);
+                        return CheckboxListTile(
+                          title: Text(category),
+                          value: isSelected,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value != null && value) {
+                                selectedCategories.add(category);
+                              } else {
+                                selectedCategories.remove(category);
+                              }
+                              loadItem(1);
+                            });
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void loadItem(int pageNumber) {
+    String selectedCategoriesText = selectedCategories.join("','");
     http.post(
         Uri.parse(
             '${MyConfig().server}/mobileprogramming/barterlt/php/load_item.php'),
-        body: {}).then((response) {
-      // log(response.body);
+        body: {
+          "selectedCategory": selectedCategoriesText,
+          'pageNo': pageNumber.toString()
+        }).then((response) {
+      log(response.body);
 
       itemList.clear();
       if (response.statusCode == 200) {
@@ -133,8 +266,15 @@ class _SearchScreenState extends State<SearchScreen> {
           extractdata['items'].forEach((v) {
             itemList.add(Item.fromJson(v));
           });
+          numberOfPage = int.parse(jsondata['numberOfPage']);
+          numberOfResults = int.parse(jsondata['numberOfResult']);
+          httpStatus = true;
+        } else {
+          httpStatus = false;
         }
         setState(() {});
+      } else {
+        httpStatus = false;
       }
     });
   }
@@ -187,10 +327,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void searchCatch(String search) {
+    String selectedCategoriesText = selectedCategories.join("','");
+
     http.post(
         Uri.parse(
             "${MyConfig().server}/mobileprogramming/barterlt/php/load_item.php"),
-        body: {"search": search}).then((response) {
+        body: {
+          "search": search,
+          "selectedCategory": selectedCategoriesText
+        }).then((response) {
       log(response.body);
       itemList.clear();
       if (response.statusCode == 200) {
@@ -200,6 +345,8 @@ class _SearchScreenState extends State<SearchScreen> {
           extractdata['items'].forEach((v) {
             itemList.add(Item.fromJson(v));
           });
+          numberOfPage = int.parse(jsondata['numberOfPage']);
+          numberOfResults = int.parse(jsondata['numberOfResult']);
         }
         setState(() {});
       }
