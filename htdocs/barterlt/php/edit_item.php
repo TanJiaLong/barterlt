@@ -9,6 +9,7 @@ $itemId = $_POST['itemId'];
 $itemName = $_POST['itemName'];
 $itemDesc = $_POST['itemDesc'];
 $itemCategory = $_POST['itemCategory'];
+$itemQuantity = $_POST['itemQuantity'];
 $itemValue = $_POST['itemValue'];
 $state = $_POST['state'];
 $locality = $_POST['locality'];
@@ -21,13 +22,13 @@ $sqlUpdate = "UPDATE `tbl_items`
                 SET      `item_name` = '$itemName',
                          `item_desc` = '$itemDesc',
                          `item_category` = '$itemCategory',
+                         `item_quantity` = '$itemQuantity',
                          `item_value` = '$itemValue',
                          `state` = '$state',
                          `locality` = '$locality',
                          `latitude` = '$latitude',
                          `longitude` = '$longitude'
                 WHERE    `item_id` = '$itemId'";
-              
 if($conn->query($sqlUpdate) === true){
     $response = array('status' => 'success', 'data' => null);
     sendJsonResponse($response);
