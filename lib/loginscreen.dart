@@ -128,11 +128,17 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 6),
             GestureDetector(
               onTap: toRegister,
-              child: const Text("New Accounts?"),
+              child: const Text(
+                "New Accounts?",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
             GestureDetector(
-              onTap: toForgotPassword,
-              child: const Text("Forgot Password?"),
+              onTap: toLoginGuest,
+              child: const Text(
+                "Login as Guest",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -179,7 +185,18 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => const RegisterScreen()));
   }
 
-  void toForgotPassword() {}
+  void toLoginGuest() {
+    User user = User(
+      id: "na",
+      name: "na",
+      email: "na",
+      phone: "na",
+      password: "na",
+      datereg: "na",
+    );
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (context) => MainScreen(user: user)));
+  }
 
   void saveprefs(bool value) async {
     String email = emailEditingController.text;

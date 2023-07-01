@@ -1,5 +1,6 @@
 import 'package:barterlt/loginscreen.dart';
 import 'package:barterlt/models/user.dart';
+import 'package:barterlt/registerscreen.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -71,25 +72,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: ((context) => const LoginScreen())));
-              },
-              child: Container(
-                height: screenHeight * 0.05,
-                width: screenWidth,
-                color: const Color.fromARGB(255, 165, 218, 243),
-                child: const Center(
-                  child: Text(
-                    "Logout",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            widget.user.id == "na"
+                ? Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: ((context) => const LoginScreen())));
+                        },
+                        child: Container(
+                          height: screenHeight * 0.05,
+                          width: screenWidth,
+                          color: const Color.fromARGB(255, 165, 218, 243),
+                          child: const Center(
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: ((context) =>
+                                      const RegisterScreen())));
+                        },
+                        child: Container(
+                          height: screenHeight * 0.05,
+                          width: screenWidth,
+                          color: const Color.fromARGB(255, 165, 218, 243),
+                          child: const Center(
+                            child: Text(
+                              "Register Account",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => const LoginScreen())));
+                    },
+                    child: Container(
+                      height: screenHeight * 0.05,
+                      width: screenWidth,
+                      color: const Color.fromARGB(255, 165, 218, 243),
+                      child: const Center(
+                        child: Text(
+                          "Logout",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

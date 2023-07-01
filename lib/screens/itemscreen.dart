@@ -54,153 +54,167 @@ class _ItemScreenState extends State<ItemScreen> {
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Items')),
-      body: httpStatus
-          ? RefreshIndicator(
-              onRefresh: _refreshItems,
-              child: Column(
-                children: [
-                  InkWell(
-                    onTap: showCategoryFilter,
-                    child: Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      alignment: Alignment.center,
-                      color: Colors.grey,
-                      child: Row(
-                        children: const [
-                          Icon(Icons.category),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Select Categories',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 24,
-                    color: Theme.of(context).colorScheme.primary,
-                    alignment: Alignment.center,
-                    child: Text(
-                      '$numberOfResults items found',
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
-                  Expanded(
-                      child: GridView.count(
-                    crossAxisCount: axiscount,
-                    children: List.generate(itemList.length, (index) {
-                      return Card(
-                        elevation: 10,
-                        child: InkWell(
-                          onLongPress: () {
-                            deleteDialog(index);
-                          },
-                          onTap: () async {
-                            Item item = Item.fromJson(itemList[index].toJson());
-                            await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditItemScreen(
-                                        user: widget.user, item: item)));
-                            loadItem(1);
-                            currentPage = 1;
-                          },
-                          child: Column(
-                            children: [
-                              Flexible(
-                                flex: 5,
-                                child: CachedNetworkImage(
-                                  height: 120,
-                                  imageUrl:
-                                      '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${itemList[index].itemId}-1.png',
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) =>
-                                      const CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
+      body: widget.user.id == 'na'
+          ? const Center(
+              child: Text(
+                "Login First in order to add items",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            )
+          : httpStatus
+              ? RefreshIndicator(
+                  onRefresh: _refreshItems,
+                  child: Column(
+                    children: [
+                      InkWell(
+                        onTap: showCategoryFilter,
+                        child: Container(
+                          height: 40,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          alignment: Alignment.center,
+                          color: Colors.grey,
+                          child: Row(
+                            children: const [
+                              Icon(Icons.category),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Select Categories',
+                                  style: TextStyle(fontSize: 16),
                                 ),
-                              ),
-                              Text(
-                                itemList[index].itemName.toString(),
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                itemList[index].itemCategory.toString(),
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                              Text(
-                                "${itemList[index].itemQuantity} in stock",
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              Text(
-                                "RM ${double.parse(itemList[index].itemValue.toString()).toStringAsFixed(2)}",
-                                style: const TextStyle(fontSize: 14),
                               ),
                             ],
                           ),
                         ),
-                      );
-                    }),
-                  )),
-                  SizedBox(
-                    height: 50,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: numberOfPage,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        //build the list for textbutton with scroll
-                        if ((currentPage - 1) == index) {
-                          //set current page number active
-                          color = Colors.red;
-                        } else {
-                          color = Colors.black;
-                        }
-                        return TextButton(
-                            onPressed: () {
-                              currentPage = index + 1;
-                              loadItem(index + 1);
-                            },
-                            child: Text(
-                              (index + 1).toString(),
-                              style: TextStyle(color: color, fontSize: 18),
-                            ));
-                      },
-                    ),
+                      ),
+                      Container(
+                        height: 24,
+                        color: Theme.of(context).colorScheme.primary,
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$numberOfResults items found',
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                      Expanded(
+                          child: GridView.count(
+                        crossAxisCount: axiscount,
+                        children: List.generate(itemList.length, (index) {
+                          return Card(
+                            elevation: 10,
+                            child: InkWell(
+                              onLongPress: () {
+                                deleteDialog(index);
+                              },
+                              onTap: () async {
+                                Item item =
+                                    Item.fromJson(itemList[index].toJson());
+                                await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EditItemScreen(
+                                            user: widget.user, item: item)));
+                                loadItem(1);
+                                currentPage = 1;
+                              },
+                              child: Column(
+                                children: [
+                                  Flexible(
+                                    flex: 5,
+                                    child: CachedNetworkImage(
+                                      height: 120,
+                                      imageUrl:
+                                          '${MyConfig().server}/mobileprogramming/barterlt/assets/items/${itemList[index].itemId}-1.png',
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ),
+                                  ),
+                                  Text(
+                                    itemList[index].itemName.toString(),
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    itemList[index].itemCategory.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                  Text(
+                                    "${itemList[index].itemQuantity} in stock",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  Text(
+                                    "RM ${double.parse(itemList[index].itemValue.toString()).toStringAsFixed(2)}",
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      )),
+                      SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: numberOfPage,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            //build the list for textbutton with scroll
+                            if ((currentPage - 1) == index) {
+                              //set current page number active
+                              color = Colors.red;
+                            } else {
+                              color = Colors.black;
+                            }
+                            return TextButton(
+                                onPressed: () {
+                                  currentPage = index + 1;
+                                  loadItem(index + 1);
+                                },
+                                child: Text(
+                                  (index + 1).toString(),
+                                  style: TextStyle(color: color, fontSize: 18),
+                                ));
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                Text(
-                  "HTTP data is not yet available",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "HTTP data is not yet available",
+                      style:
+                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-              ],
+      floatingActionButton: widget.user.id == 'na'
+          ? null
+          : FloatingActionButton(
+              onPressed: () async {
+                if (widget.user.id != 'na') {
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              NewItemScreen(user: widget.user)));
+                  loadItem(1);
+                }
+              },
+              child: const Text(
+                '+',
+                style: TextStyle(fontSize: 32),
+              ),
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (widget.user.id != 'na') {
-            await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => NewItemScreen(user: widget.user)));
-            loadItem(1);
-          }
-        },
-        child: const Text(
-          '+',
-          style: TextStyle(fontSize: 32),
-        ),
-      ),
     );
   }
 
