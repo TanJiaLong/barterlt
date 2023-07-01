@@ -9,6 +9,7 @@ $userId = $_POST['userId'];
 $itemName = $_POST['itemName'];
 $itemDesc = $_POST['itemDesc'];
 $itemCategory = $_POST['itemCategory'];
+$itemQuantity = $_POST['itemQuantity'];
 $itemValue = $_POST['itemValue'];
 $state = $_POST['state'];
 $locality = $_POST['locality'];
@@ -24,6 +25,7 @@ $sqlinsert = "INSERT INTO `tbl_items`(`user_id`,
                                         `item_name`,
                                         `item_desc`,
                                         `item_category`,
+                                        `item_quantity`,
                                         `item_value`,
                                         `state`,
                                         `locality`,
@@ -33,6 +35,7 @@ $sqlinsert = "INSERT INTO `tbl_items`(`user_id`,
                      '$itemName',
                      '$itemDesc',
                      '$itemCategory',
+                     '$itemQuantity',
                      '$itemValue',
                      '$state',
                      '$locality',
