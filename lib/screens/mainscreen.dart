@@ -1,9 +1,9 @@
 import 'package:barterlt/models/user.dart';
-import 'package:barterlt/screens/itemscreen.dart';
+import 'package:barterlt/screens/seller/itemscreen.dart';
 import 'package:barterlt/screens/messagescreen.dart';
 import 'package:barterlt/screens/profilescreen.dart';
 import 'package:barterlt/screens/ratingscreen.dart';
-import 'package:barterlt/screens/searchscreen.dart';
+import 'package:barterlt/screens/buyer/searchscreen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -21,13 +21,10 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     tabchildren = <Widget>[
       SearchScreen(user: widget.user),
       ItemScreen(user: widget.user),
-      MessageScreen(user: widget.user),
-      RatingScreen(user: widget.user),
       ProfileScreen(user: widget.user)
     ];
   }
@@ -50,14 +47,6 @@ class _MainScreenState extends State<MainScreen> {
             label: "Item",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: "Message",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: "Rating",
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.people),
             label: "Profile",
           ),
@@ -76,12 +65,6 @@ class _MainScreenState extends State<MainScreen> {
         maintitle = "Item";
       }
       if (_currentIndex == 2) {
-        maintitle = "Messages";
-      }
-      if (_currentIndex == 3) {
-        maintitle = "Rating";
-      }
-      if (_currentIndex == 3) {
         maintitle = "Profile";
       }
     });

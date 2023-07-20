@@ -4,7 +4,9 @@ import 'dart:developer';
 import 'package:barterlt/models/item.dart';
 import 'package:barterlt/models/user.dart';
 import 'package:barterlt/myconfig.dart';
-import 'package:barterlt/screens/itemdetailscreen.dart';
+import 'package:barterlt/screens/buyer/buyercartscreen.dart';
+import 'package:barterlt/screens/buyer/buyerorderscreen.dart';
+import 'package:barterlt/screens/buyer/itemdetailscreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -37,9 +39,11 @@ class _SearchScreenState extends State<SearchScreen> {
   int numberOfResults = 0;
   var color;
   bool httpStatus = false;
+
+  int cartItemQuantity = 0;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadItem(1);
   }
@@ -58,36 +62,70 @@ class _SearchScreenState extends State<SearchScreen> {
         title: const Text("Barter Screen"),
         actions: [
           IconButton(
-              onPressed: () {
-                showSearchDialog();
-              },
-              icon: const Icon(Icons.search))
+            onPressed: () {
+              showSearchDialog();
+            },
+            icon: const Icon(Icons.search),
+          ),
+          IconButton(
+            onPressed: () {
+              showCategoryFilter();
+            },
+            icon: const Icon(Icons.category),
+          ),
+          TextButton.icon(
+            onPressed: () async {
+              if (widget.user.id.toString() == "na") {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please login/register an account")));
+                return;
+              }
+
+              if (cartItemQuantity > 0) {
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            BuyerCartScreen(user: widget.user)));
+                loadItem(1);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("No item in cart")));
+              }
+            },
+            icon: const Icon(Icons.shopping_cart),
+            label: Text(
+              cartItemQuantity.toString(),
+            ),
+            style: TextButton.styleFrom(foregroundColor: Colors.white),
+          ),
+          PopupMenuButton(itemBuilder: (context) {
+            return [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text("My Order"),
+              ),
+            ];
+          }, onSelected: (value) async {
+            if (value == 0) {
+              if (widget.user.id.toString() == "na") {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please login/register an account")));
+                return;
+              }
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (content) => BuyerOrderScreen(
+                            user: widget.user,
+                          )));
+            }
+          }),
         ],
       ),
       body: httpStatus
           ? Column(
               children: [
-                InkWell(
-                  onTap: showCategoryFilter,
-                  child: Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    alignment: Alignment.center,
-                    color: Colors.grey,
-                    child: Row(
-                      children: const [
-                        Icon(Icons.category),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Select Categories',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
                 Container(
                   height: 20,
                   color: Theme.of(context).colorScheme.primary,
@@ -181,15 +219,22 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ],
             )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                Text(
-                  "HTTP data is not yet available",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
-              ],
+          : Container(
+              width: screenWidth,
+              color: const Color.fromARGB(255, 208, 195, 195),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    "Loading Data...",
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 128,
+                  ),
+                  CircularProgressIndicator(),
+                ],
+              ),
             ),
     );
   }
@@ -253,10 +298,11 @@ class _SearchScreenState extends State<SearchScreen> {
         Uri.parse(
             '${MyConfig().server}/mobileprogramming/barterlt/php/load_item.php'),
         body: {
+          "cartUserId": widget.user.id,
           "selectedCategory": selectedCategoriesText,
           'pageNo': pageNumber.toString()
         }).then((response) {
-      log(response.body);
+      // log(response.body);
 
       itemList.clear();
       if (response.statusCode == 200) {
@@ -266,6 +312,7 @@ class _SearchScreenState extends State<SearchScreen> {
           extractdata['items'].forEach((v) {
             itemList.add(Item.fromJson(v));
           });
+          cartItemQuantity = int.parse(jsondata['cartqty'].toString());
           numberOfPage = int.parse(jsondata['numberOfPage']);
           numberOfResults = int.parse(jsondata['numberOfResult']);
           httpStatus = true;
@@ -333,6 +380,7 @@ class _SearchScreenState extends State<SearchScreen> {
         Uri.parse(
             "${MyConfig().server}/mobileprogramming/barterlt/php/load_item.php"),
         body: {
+          "cartUserId": widget.user.id,
           "search": search,
           "selectedCategory": selectedCategoriesText
         }).then((response) {

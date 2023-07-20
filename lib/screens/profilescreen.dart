@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:barterlt/loginscreen.dart';
 import 'package:barterlt/models/user.dart';
+import 'package:barterlt/myconfig.dart';
 import 'package:barterlt/registerscreen.dart';
+import 'package:barterlt/screens/updateprofilescreen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
   final User user;
@@ -13,6 +19,14 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late double screenHeight, screenWidth;
+  User currentUser = User();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    currentUser = widget.user;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,103 +55,116 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Image.asset("assets/images/profile.png"),
                     ),
                     Expanded(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.user.name.toString(),
-                          style: const TextStyle(fontSize: 32),
-                        ),
-                        Text(
-                          widget.user.email.toString(),
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          widget.user.phone.toString(),
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          widget.user.datereg.toString(),
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ))
+                        child: currentUser.id == "na"
+                            ? const Text(
+                                "Guest",
+                                style: TextStyle(fontSize: 32),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    // widget.user.name.toString(),
+                                    currentUser.name.toString(),
+                                    style: const TextStyle(fontSize: 30),
+                                  ),
+                                  Text(
+                                    // widget.user.email.toString(),
+                                    currentUser.email.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                  Text(
+                                    // widget.user.phone.toString(),
+                                    currentUser.phone.toString(),
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                  Text(
+                                    // widget.user.datereg.toString(),
+                                    currentUser.datereg.toString(),
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ))
                   ],
                 ),
               ),
             ),
             const Text(
-              "Profile",
+              "PROFILE",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            widget.user.id == "na"
+            // widget.user.id == "na"
+            currentUser.id == "na"
                 ? Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: ((context) => const LoginScreen())));
-                        },
-                        child: Container(
-                          height: screenHeight * 0.05,
-                          width: screenWidth,
-                          color: const Color.fromARGB(255, 165, 218, 243),
-                          child: const Center(
-                            child: Text(
-                              "Login",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                      SizedBox(
+                        width: screenWidth,
+                        child: MaterialButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: ((context) =>
+                                        const LoginScreen())));
+                          },
+                          child: const Text("LOGIN"),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: ((context) =>
-                                      const RegisterScreen())));
-                        },
-                        child: Container(
-                          height: screenHeight * 0.05,
-                          width: screenWidth,
-                          color: const Color.fromARGB(255, 165, 218, 243),
-                          child: const Center(
-                            child: Text(
-                              "Register Account",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                      const Divider(),
+                      SizedBox(
+                        width: screenWidth,
+                        child: MaterialButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: ((context) =>
+                                        const RegisterScreen())));
+                          },
+                          child: const Text("REGISTER ACCOUNT"),
                         ),
                       ),
                     ],
                   )
-                : GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => const LoginScreen())));
-                    },
-                    child: Container(
-                      height: screenHeight * 0.05,
-                      width: screenWidth,
-                      color: const Color.fromARGB(255, 165, 218, 243),
-                      child: const Center(
-                        child: Text(
-                          "Logout",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                : Column(
+                    children: [
+                      SizedBox(
+                        width: screenWidth,
+                        child: MaterialButton(
+                          onPressed: () async {
+                            final updatedUser = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateProfileScreen(
+                                        user: currentUser)));
+
+                            if (updatedUser != null) {
+                              currentUser = updatedUser as User;
+                              setState(() {});
+                            } else {
+                              //User click back button from update profile page
+                              //Do not do anything
+                            }
+                          },
+                          child: const Text("UPDATE PROFILE"),
                         ),
                       ),
-                    ),
+                      const Divider(),
+                      SizedBox(
+                        width: screenWidth,
+                        child: MaterialButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (content) => const LoginScreen()));
+                          },
+                          child: const Text("LOGOUT"),
+                        ),
+                      ),
+                    ],
                   ),
           ],
         ),

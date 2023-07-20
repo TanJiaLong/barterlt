@@ -4,8 +4,9 @@ import 'dart:developer';
 import 'package:barterlt/models/item.dart';
 import 'package:barterlt/models/user.dart';
 import 'package:barterlt/myconfig.dart';
-import 'package:barterlt/screens/edititemscreen.dart';
-import 'package:barterlt/screens/newitemscreen.dart';
+import 'package:barterlt/screens/seller/edititemscreen.dart';
+import 'package:barterlt/screens/seller/newitemscreen.dart';
+import 'package:barterlt/screens/seller/sellerorderscreen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -31,7 +32,7 @@ class _ItemScreenState extends State<ItemScreen> {
     'Clothing and Fashion'
   ];
   List<String> selectedCategories = [];
-  bool httpStatus = false;
+  bool dataStatus = false;
 
   var color;
   List<Item> itemList = [];
@@ -53,7 +54,41 @@ class _ItemScreenState extends State<ItemScreen> {
       axiscount = 2;
     }
     return Scaffold(
-      appBar: AppBar(title: const Text('Items')),
+      appBar: AppBar(
+        title: const Text('Items'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showCategoryFilter();
+              },
+              icon: const Icon(Icons.category)),
+          PopupMenuButton(
+              // add icon, by default "3 dot" icon
+              // icon: Icon(Icons.book)
+              itemBuilder: (context) {
+            return [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text("My Order"),
+              ),
+            ];
+          }, onSelected: (value) async {
+            if (value == 0) {
+              if (widget.user.id.toString() == "na") {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please login/register an account")));
+                return;
+              }
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (content) => SellerOrderScreen(
+                            user: widget.user,
+                          )));
+            }
+          }),
+        ],
+      ),
       body: widget.user.id == 'na'
           ? const Center(
               child: Text(
@@ -61,32 +96,11 @@ class _ItemScreenState extends State<ItemScreen> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             )
-          : httpStatus
+          : dataStatus
               ? RefreshIndicator(
                   onRefresh: _refreshItems,
                   child: Column(
                     children: [
-                      InkWell(
-                        onTap: showCategoryFilter,
-                        child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          alignment: Alignment.center,
-                          color: Colors.grey,
-                          child: Row(
-                            children: const [
-                              Icon(Icons.category),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Select Categories',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                       Container(
                         height: 24,
                         color: Theme.of(context).colorScheme.primary,
@@ -186,16 +200,22 @@ class _ItemScreenState extends State<ItemScreen> {
                     ],
                   ),
                 )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    Text(
-                      "HTTP data is not yet available",
-                      style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+              : Container(
+                  width: screenWidth,
+                  color: const Color.fromARGB(255, 208, 195, 195),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        "No Data Available Yet",
+                        style: TextStyle(
+                            fontSize: 32, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 128,
+                      ),
+                    ],
+                  ),
                 ),
       floatingActionButton: widget.user.id == 'na'
           ? null
@@ -297,13 +317,13 @@ class _ItemScreenState extends State<ItemScreen> {
           });
           numberOfPage = int.parse(jsondata['numberOfPage']);
           numberOfResults = int.parse(jsondata['numberOfResult']);
-          httpStatus = true;
+          dataStatus = true;
         } else {
-          httpStatus = false;
+          dataStatus = false;
         }
         setState(() {});
       } else {
-        httpStatus = false;
+        dataStatus = false;
       }
     });
   }
