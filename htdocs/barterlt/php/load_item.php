@@ -15,8 +15,14 @@ if(isset($_POST['pageNo'])){
 }else{
 	$pageNo = 1;
 }
-
 $first_result_for_that_page = ($pageNo - 1) * $results_per_page;
+
+
+if(isset($_POST['cartUserId'])){
+	$cartUserId = $_POST['cartUserId'];
+}else{
+	$cartUserId = 0;
+}
 
 //check categories first
 if(isset($_POST['selectedCategory']) && !empty($_POST['selectedCategory'])){
@@ -26,34 +32,58 @@ if(isset($_POST['selectedCategory']) && !empty($_POST['selectedCategory'])){
 	if(isset($_POST['userid'])){
 		if($_POST['userid'] != 'na'){
 			$userid = $_POST["userid"];
-			$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory) AND user_id = '$userid'";
+			$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory) AND user_id = '$userid' AND `item_quantity` > '0'";
+			$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$userid'";
 		}else{
-			$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory)";
+			$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory) AND `item_quantity` > '0'";
+			$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$cartUserId'";
 		}
 	}
 	//search page (with search keywords)
 	else if(isset($_POST['search'])){
 		$search = $_POST["search"];
-		$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory) AND (item_name LIKE '%$search%' OR item_desc LIKE '%$search%')";
+		$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory) AND (item_name LIKE '%$search%' OR item_desc LIKE '%$search%') AND `item_quantity` > '0'";
+		$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$cartUserId'";
 	}
 	//search page
 	else{
-		$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory)";
+		$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_category` IN ($selectedCategory) AND `item_quantity` > '0'";
+		$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$cartUserId'";
 	}
 }else{
 	if(isset($_POST['userid'])){
 		if($_POST['userid'] != 'na'){
 			$userid = $_POST["userid"];
-			$sqlloaditems = "SELECT * FROM `tbl_items` WHERE user_id = '$userid'";
+			$sqlloaditems = "SELECT * FROM `tbl_items` WHERE user_id = '$userid' AND `item_quantity` > '0'";
+			$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$userid'";
 		}else{
-			$sqlloaditems = "SELECT * FROM `tbl_items`";
+			$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_quantity` > '0'";
+			$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$cartUserId'";
 		}
 	}else if(isset($_POST['search'])){
 		$search = $_POST["search"];
-		$sqlloaditems = "SELECT * FROM `tbl_items` WHERE item_name LIKE '%$search%' OR item_desc LIKE '%$search%'";
+		$sqlloaditems = "SELECT * FROM `tbl_items` WHERE (item_name LIKE '%$search%' OR item_desc LIKE '%$search%') AND `item_quantity` > '0'";
+		$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$cartUserId'";
 	}else{
-		$sqlloaditems = "SELECT * FROM `tbl_items`";
+		$sqlloaditems = "SELECT * FROM `tbl_items` WHERE `item_quantity` > '0'";
+		$sqlcart = "SELECT * FROM `tbl_carts` WHERE `cart_userId` = '$cartUserId'";
 	}
+}
+
+//cart quantity
+if (isset($sqlcart)){
+	$resultcart = $conn->query($sqlcart);
+	$number_of_result_cart = $resultcart->num_rows;
+	if ($number_of_result_cart > 0) {
+		$totalcart = 0;
+		while ($rowcart = $resultcart->fetch_assoc()) {
+			$totalcart = $totalcart+ $rowcart['cart_quantity'];
+		}
+	}else{
+		$totalcart = 0;
+	}
+}else{
+	$totalcart = 0;
 }
 
 //Pagination
@@ -83,7 +113,7 @@ if($result->num_rows > 0){
 			
 		array_push($items['items'], $itemlist);
 	}
-	$response = array('status'=> 'success', 'data'=> $items, 'numberOfPage'=> "$numberOfPage", "numberOfResult"=>"$numberOfResult");
+	$response = array('status'=> 'success', 'data'=> $items, 'numberOfPage'=> "$numberOfPage", "numberOfResult"=>"$numberOfResult","cartqty"=> "$totalcart");
 	sendJsonResponse($response);
 } else {
 	$response = array('status'=> 'failed', 'data'=> null, 'sql'=> $sqlloaditems);

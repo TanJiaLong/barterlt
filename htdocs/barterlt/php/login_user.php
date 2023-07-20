@@ -20,6 +20,7 @@
 			$userarray['id'] = $row['id'];
 			$userarray['name'] = $row['name'];
 			$userarray['email'] = $row['email'];
+			$userarray['phone'] = $row['phone'];
 			$userarray['password'] = $_POST['password'];
 			$userarray['regDate'] = $row['regDate'];
 			

@@ -6,13 +6,17 @@
 	}
 	include_once('dbconnect.php');
 	
+    $userId = $_POST['id']; 
 	$name = $_POST['name'];
 	$email = $_POST['email'];
 	$phone = $_POST['phone'];
 	$password = sha1($_POST['password']);
 	
-	$sqlinsert = "INSERT INTO `tbl_user` (`name`, `email`, `phone`,`password`) 
-              VALUES ('$name', '$email', '$phone','$password')";
+	$sqlinsert = "UPDATE `tbl_user` SET `name` = '$name', 
+                                        `email` = '$email', 
+                                        `phone` = '$phone',
+                                        `password` = '$password'
+                                    WHERE `id` = '$userId'";
 	
 	if($conn-> query($sqlinsert) === TRUE){
 		$response = array("status" => "success", "data" => null);

@@ -12,16 +12,23 @@ include_once('dbconnect.php');
 
 $sqlDelete = "DELETE FROM `tbl_items` WHERE `item_id` = '$itemId'";           
 if($conn->query($sqlDelete) === true){
-    $response = array('status' => 'success', 'data' => null);
-    sendJsonResponse($response);
+    //delete cart related to that item
+    $sqlDelete = "DELETE FROM `tbl_carts` WHERE `cart_itemId` = '$itemId'";
+    
+    if($conn->query($sqlDelete) === true){
+        $response = array('status' => 'success', 'data' => null);
+        sendJsonResponse($response);
+    }
+    else {
+        $response = array('status' => 'failed','data' => null);
+        sendJsonResponse($response);
+    }
 }
 else {
-    $response = array(
-        'status' => 'failed',
-        'data' => null
-    );
+    $response = array('status' => 'failed','data' => null);
     sendJsonResponse($response);
 }
+
 
 function sendJsonResponse($sendArray){
     header('Content-Type: application/json');
